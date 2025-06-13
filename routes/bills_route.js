@@ -1,28 +1,28 @@
 const express = require('express')
 const router = express.Router()
-const { 
-    createBill, 
-    getBills, 
-    getBillsById, 
-    updateBill, 
-    deleteBill 
+const {
+    createBill,
+    getBills,
+    getBillsById,
+    updateBill,
+    deleteBill
 } = require('../controllers/bills_controllers')
-const authentificationController = require ('../controllers/authentification_controllers')
+const authentificationController = require('../controllers/authentification_controllers')
 const upload = require('../middlewares/upload')
 
-// Route pour créer une nouvelle facture
+// Route to create a new bill
 router.post('/', authentificationController.verifyToken, upload.single('proof'), createBill)
 
-// Route pour obtenir toutes les factures
+// Route to get all bills
 router.get('/', authentificationController.verifyToken, getBills)
 
-// Route pour obtenir une facture par preuve
+// Route to get a bill by ID
 router.get('/:id', authentificationController.verifyToken, getBillsById)
 
-// Route pour mettre à jour une facture
+// Route to update a bill
 router.put('/:id', authentificationController.verifyToken, updateBill)
 
-// Route pour supprimer une facture
+// Route to delete a bill
 router.delete('/:id', authentificationController.verifyToken, deleteBill)
 
 module.exports = router

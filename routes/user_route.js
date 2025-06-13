@@ -9,16 +9,16 @@ const {
 } = require('../controllers/user_controllers')
 const authentificationController = require ('../controllers/authentification_controllers')
 
-// Route pour créer un nouvel utilisateur
+// Route to create a new user
 router.post('/', createUser)
 
-// Route pour obtenir tous les utilisateurs
+// Route to get all user or user by email
 router.get('/', authentificationController.verifyToken, getUsers)
 
-// Route pour mettre à jour un utilisateur
+// Route to update a user
 router.put('/', authentificationController.verifyToken, updateUser)
 
-// Route pour supprimer un utilisateur
+// Route to delete a user
 router.delete('/', authentificationController.verifyToken, deleteUser)
 
 module.exports = router

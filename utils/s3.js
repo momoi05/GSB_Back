@@ -1,13 +1,15 @@
- const AWS = require('aws-sdk')
- const {v4: uuidv4} = require ('uuid')
+const AWS = require('aws-sdk')
+const { v4: uuidv4 } = require('uuid')
 
- const s3 = new AWS.S3({
+// Initialize AWS S3 client with access credentials from environment variables
+const s3 = new AWS.S3({
     accessKeyId: process.env.ID,
     secretAccessKey: process.env.SECRET
- })
+})
 
+// Async function to upload a file to S3 and return its URL
 const uploadToS3 = async (file) => {
-    try{
+    try {
         const fileExtention = file.originalname.split(' ').pop();
         const key = `${uuidv4()}.${fileExtention}`;
 
@@ -20,10 +22,11 @@ const uploadToS3 = async (file) => {
         const uploadData = await s3.upload(params).promise();
         console.log(`File uploaded successfully. ${uploadData.Location}`)
         return uploadData.Location;
-        
-    }catch(error){
+
+    } catch (error) {
         console.error('Error uploading to S3:', error);
         throw new Error('Failed to upload file to S3');
     }
 }
-module.exports = {uploadToS3};
+
+module.exports = { uploadToS3 };

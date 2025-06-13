@@ -5,34 +5,35 @@ const billsSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    amount : {
-        type:Number,
+    amount: {
+        type: Number,
         require: true,
     },
-    proof:{
+    proof: {
         type: String,
         require: true
     },
-    description:{
-        type : String,
+    description: {
+        type: String,
         require: true
     },
-    user : {
-        type : mongoose.Schema.Types.ObjectId,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
     status: {
         type: String,
         require: true
     },
-    type:{
-        type :String,
-        require:true
+    type: {
+        type: String,
+        require: true
     },
-    createdAt:{
+    createdAt: {
         type: String,
         default: Date.now()
     }
 })
+
 const Bill = mongoose.model('Bills', billsSchema)
 module.exports = Bill

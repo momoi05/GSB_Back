@@ -3,6 +3,7 @@ const  User = require ('../models/user_models');
 const sha256 = require ('js-sha256')
 const JWT_SECRET = 'your-secret-key'; 
 
+// Login method that will check if the user exists and if the password is correct returns a token
 const login = async (req, res) => {
     const {email, password}=req.body
     const user = await User.findOne({email})
@@ -16,6 +17,7 @@ const login = async (req, res) => {
     res.status(200).json({token})
 }
 
+// Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1] || req.headers.authorization
     if(!token){
@@ -28,10 +30,6 @@ const verifyToken = (req, res, next) => {
         req.user = decoded
         next()
     })
-}
-
-const isAdmin = (req, res, next) => {
-
 }
 
 module.exports = {login, verifyToken, isAdmin} 

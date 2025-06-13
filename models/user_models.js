@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    email : {
-        type:String,
+    email: {
+        type: String,
         require: true,
         unique: true
     },
@@ -15,30 +15,23 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    role:{
+    role: {
         type: String,
         require: true
     },
-    createdAt:{
+    createdAt: {
         type: String,
         default: Date.now()
     }
 })
 
-userSchema.pre('save', async function(next) {
-    const existingUser = await User.findOne({email: this.email})
-    if (existingUser){
-        throw new Error('User already exists', {cause: 400})
+// Pre-save hook that hashes the password and checks if the user already exists by email
+userSchema.pre('save', async function (next) {
+    const existingUser = await User.findOne({ email: this.email })
+    if (existingUser) {
+        throw new Error('User already exists', { cause: 400 })
     }
     this.password = sha256(this.password + process.env.SALT)
-    next()
-})
-
-userSchema.pre('findOneAndUpdate', async function(next) {
-    const existingUser = await User.findOne({email: this.email})
-    if (existingUser){
-        throw new Error('User already exists', {cause: 400})
-    }
     next()
 })
 
