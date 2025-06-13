@@ -32,4 +32,4 @@ const verifyToken = (req, res, next) => {
     })
 }
 
-module.exports = {login, verifyToken, isAdmin} 
+module.exports = {login, verifyToken} 
