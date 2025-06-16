@@ -17,10 +17,16 @@ db.on('error', (err) => { console.log('error connecting to MongoDb', err); });
 db.once('open', () => { console.log('Connected to MongoDb'); });
 
 app.use(express.json())
-app.use(cors())
 app.use('/user', usersRouter);
 app.use('/bills', billsRouter);
 app.use('/auth', authentificationRouter);
+
+
+app.use(cors({
+    origin: 'http://localhost:5173', // autorise ton frontend local
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true
+}));
 
 app.listen(port, () =>{
 console.log(`Server is running on port ${port}`);
