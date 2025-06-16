@@ -5,12 +5,16 @@ const cors = require ('cors')
 const usersRouter = require('./routes/user_route');
 const billsRouter = require('./routes/bills_route');
 const authentificationRouter = require('./routes/authentification_route');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://admin:admin@cluster0.jn13m.mongodb.net/nexa')
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
+
 const db = mongoose.connection;
-db.on('error', (err) => {console.log('error connecting to MongoDb', err)})
-db.on('open', () => {console.log('Connecting to MongoDb')})
+db.on('error', (err) => { console.log('error connecting to MongoDb', err); });
+db.once('open', () => { console.log('Connected to MongoDb'); });
 
 app.use(express.json())
 app.use(cors())
