@@ -51,7 +51,7 @@ const getBills = async (req, res) => {
 const getBillsById = async (req, res) => {
     try {
         const { id } = req.params
-        const bill = await Bill.findOne({ id })
+        const bill = await Bill.findOne({ _id: id })
         if (!bill) {
             throw new Error('Bill not found', { cause: 404 })
         }
@@ -60,6 +60,7 @@ const getBillsById = async (req, res) => {
         if (error['cause'] === 404) {
             res.status(404).json({ message: error.message })
         } else {
+            console.log(error)
             res.status(500).json({ message: "Server error" })
         }
     }
@@ -71,7 +72,7 @@ const updateBill = async (req, res) => {
         const { id } = req.params
         const { date, amount, proof, description, status, type } = req.body
         const bill = await Bill.findOneAndUpdate(
-            { id },
+            { _id: id },
             { date, amount, proof, description, status, type },
             { new: true }
         )

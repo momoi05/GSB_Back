@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function (next) {
     const existingUser = await User.findOne({ email: this.email })
     if (existingUser) {
-        throw new Error('User already exists', { cause: 400 })
+        throw new Error('Un compte existe déjà avec cet email', { cause: 400 })
     }
     this.password = sha256(this.password + process.env.SALT)
     next()

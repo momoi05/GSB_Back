@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const  User = require ('../models/user_models');
 const sha256 = require ('js-sha256')
-const JWT_SECRET = 'your-secret-key'; 
 
 // Login method that will check if the user exists and if the password is correct returns a token
 const login = async (req, res) => {
