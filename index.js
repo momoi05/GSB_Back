@@ -16,8 +16,8 @@ const db = mongoose.connection;
 db.on('error', (err) => { console.log('error connecting to MongoDb', err); });
 db.once('open', () => { console.log('Connected to MongoDb'); });
 
-app.use(cors());
 app.use(express.json())
+app.use(cors());
 app.use('/user', usersRouter);
 app.use('/bills', billsRouter);
 app.use('/auth', authentificationRouter);
