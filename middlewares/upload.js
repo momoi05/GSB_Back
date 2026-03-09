@@ -10,14 +10,29 @@ const upload = multer({
     },
 
     fileFilter: (req, file, cb) => {
+        // LOGS : informations détaillées sur le fichier reçu
+        console.log('[UPLOAD] Nouveau fichier reçu', {
+            route: req.originalUrl,
+            method: req.method,
+            fieldname: file.fieldname,
+            originalname: file.originalname,
+            mimetype: file.mimetype,
+        });
+
         // Accepter uniquement les images OU les PDF
         // plus robuste : se baser sur le mimetype plutôt que le nom de fichier
-        if (
-            !file.mimetype.startsWith('image/') && // toutes les images
-            file.mimetype !== 'application/pdf'     // et les PDF
-        ) {
+        const isImage = file.mimetype.startsWith('image/');
+        const isPdf = file.mimetype === 'application/pdf';
+
+        if (!isImage && !isPdf) {
+            console.error('[UPLOAD] Fichier refusé (type non autorisé)', {
+                originalname: file.originalname,
+                mimetype: file.mimetype,
+            });
             return cb(new Error('Only image or PDF files are allowed!'), false);
         }
+
+        console.log('[UPLOAD] Fichier accepté par le fileFilter');
         cb(null, true);
     }
 });

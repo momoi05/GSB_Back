@@ -4,29 +4,70 @@ const { uploadToS3 } = require('../utils/s3')
 
 // CreateBill method that create a bill for user
 const createBill = async (req, res) => {
-    try {
-        const { date, amount, description, status, type } = JSON.parse(req.body.metadata)
-        console.log(date, amount, description, status, type)
-        const { id } = req.user
+    console.log('[BILL] ▶️ createBill appelé');
+    console.log('[BILL] headers:', req.headers);
+    console.log('[BILL] user (req.user):', req.user);
+    console.log('[BILL] body brut (keys):', Object.keys(req.body || {}));
 
-        //Upload file
-        let proofUrl = null
-        if (req.file) {
-            proofUrl = await uploadToS3(req.file)
-        } else {
-            throw new Error('Proof image is requierd', { cause: 400 })
+    try {
+        // Parsing sécurisé du metadata
+        const rawMetadata = req.body?.metadata;
+        console.log('[BILL] metadata brut:', rawMetadata);
+
+        if (!rawMetadata) {
+            console.error('[BILL] metadata manquant dans le body');
+            return res.status(400).json({ message: 'metadata is required' });
         }
-        const bill = new Bill({ date, amount, proof: proofUrl, description, status, type, user: id })
-        await bill.save()
-        res.status(201).json(bill)
+
+        let parsedMetadata;
+        try {
+            parsedMetadata = JSON.parse(rawMetadata);
+        } catch (parseError) {
+            console.error('[BILL] Erreur de parsing JSON du metadata:', parseError);
+            return res.status(400).json({ message: 'Invalid metadata JSON' });
+        }
+
+        const { date, amount, description, status, type } = parsedMetadata;
+        console.log('[BILL] metadata parsé:', { date, amount, description, status, type });
+
+        const { id } = req.user || {};
+        console.log('[BILL] user id utilisé pour la facture:', id);
+
+        // Upload file
+        let proofUrl = null;
+        console.log('[BILL] fichier reçu (req.file):', req.file && {
+            fieldname: req.file.fieldname,
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: req.file.size,
+        });
+
+        if (req.file) {
+            try {
+                console.log('[BILL] ▶️ Upload vers S3 en cours…');
+                proofUrl = await uploadToS3(req.file);
+                console.log('[BILL] ✅ Upload S3 terminé, url:', proofUrl);
+            } catch (uploadError) {
+                console.error('[BILL] ❌ Erreur lors de l’upload S3:', uploadError);
+                return res.status(500).json({ message: 'Error uploading proof file' });
+            }
+        } else {
+            console.error('[BILL] Aucun fichier fourni (req.file est null/undefined)');
+            throw new Error('Proof image is requierd', { cause: 400 });
+        }
+
+        const bill = new Bill({ date, amount, proof: proofUrl, description, status, type, user: id });
+        await bill.save();
+        console.log('[BILL] ✅ Facture créée avec succès:', bill._id);
+
+        res.status(201).json(bill);
 
     } catch (error) {
+        console.error('[BILL] ❌ Erreur dans createBill:', error);
         if (error['cause'] === 400) {
-            res.status(400).json({ message: error.message })
-        }
-        else {
-            console.error('error creating bill:', error)
-            res.status(500).json({ message: "Server error" })
+            return res.status(400).json({ message: error.message });
+        } else {
+            return res.status(500).json({ message: "Server error" });
         }
     }
 }
