@@ -135,7 +135,7 @@ const updateBill = async (req, res) => {
 const deleteBill = async (req, res) => {
     try {
         const { id } = req.params
-        const bill = await Bill.findOneAndDelete({ id })
+        const bill = await Bill.findOneAndDelete({ _id:id })
         res.status(200).json({ message: 'Bill delete' })
     } catch (error) {
         res.status(500).json({ message: "server error" })

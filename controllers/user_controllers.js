@@ -1,16 +1,16 @@
 const User = require('../models/user_models')
 const crypto = require("crypto");
 const PasswordResetToken = require('../models/password_reset_token_models');
-const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");  // pour envoyer l'email
 const { v4: uuidv4 } = require('uuid');
 const sendgridTransport = require('nodemailer-sendgrid');
+const sha256 = require('js-sha256');
 
 // createUser method that create a user
 const createUser = async (req, res) => {
     try {
         const { name, email, password, role } = req.body
-        const user = new User({ name, email, password, role })
+        const user = new User({ name, email, password, role: 'user' })
         await user.save()
         res.status(201).json(user)
     } catch (error) {
@@ -51,7 +51,8 @@ const updateUser = async (req, res) => {
         const updateFields = {};
         if (name) updateFields.name = name;
         if (newEmail) updateFields.email = newEmail;
-        if (password) updateFields.password = crypto.createHash('sha256').update(password).digest('hex');
+        // Hash du mot de passe de manière cohérente avec la création de compte / login
+        if (password) updateFields.password = sha256(password + process.env.SALT);
         if (role) updateFields.role = role;
 
         const user = await User.findOneAndUpdate(
@@ -159,8 +160,8 @@ const resetPassword = async (req, res) => {
             return res.status(404).json({ message: 'Utilisateur introuvable.' });
         }
 
-        // Mettre à jour le mot de passe
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // Mettre à jour le mot de passe (même stratégie que pour la création / login : SHA256 + SALT)
+        const hashedPassword = sha256(newPassword + process.env.SALT);
         await User.updateOne(
             { _id: userId },
             { $set: { password: hashedPassword } }

@@ -3,19 +3,19 @@ const mongoose = require('mongoose')
 const billsSchema = new mongoose.Schema({
     date: {
         type: String,
-        require: true
+        required: true
     },
     amount: {
         type: Number,
-        require: true,
+        required: true,
     },
     proof: {
         type: String,
-        require: true
+        required: true
     },
     description: {
         type: String,
-        require: true
+        required: true
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -23,11 +23,11 @@ const billsSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        require: true
+        required: true
     },
     type: {
         type: String,
-        require: true
+        required: true
     },
     createdAt: {
         type: String,
